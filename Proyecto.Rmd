@@ -1,0 +1,113 @@
+---
+title: ""
+date: ""
+header-includes:
+- \usepackage[utf8]{inputenc}
+- \usepackage[spanish]{babel}
+- \usepackage{graphicx}
+- \usepackage{multirow,rotating}
+- \pagenumbering{gobble}
+- \usepackage{dcolumn}
+output: 
+  pdf_document:
+    toc: true
+    toc_depth: 3
+    includes:
+      in_header: labels.tex
+      before_body: cover.tex
+csl: apa.csl
+bibliography: fuentes1.bib
+---
+
+```{=tex}
+\pagenumbering{gobble}
+\pagenumbering{arabic}
+```
+
+
+```{r setup, include=FALSE }
+knitr::opts_chunk$set(echo = T, fig.width = 6, fig.height = 3.5)
+
+```
+
+```{r, message=FALSE, include=FALSE,warning=FALSE, background=FALSE, comment=FALSE, engine.path=FALSE, cache=FALSE, out.extra=FALSE, results='hide'}
+
+rm(list = ls())
+
+pacman::p_load(tidyverse,
+               kableExtra,
+               cowplot,
+               stargazer,knitr,viridis,dplyr,readr,scales,quantmod,texreg,tinytex, 
+               tidyr, imager,lubridate,tseries, astsa, growthrates, tis, dynlm, 
+               readxl, foreign, hrbthemes, gtsummary, corrplot, lm.beta, ggfortify,
+               AER, lmtest, sandwich,GGally, performance, flextable, see, qqplotr,
+               ggrepel, patchwork,boot, rempsyc, report,multcomp, car, broom)
+```
+
+
+
+# Introducción.
+
+Este documento tiene dos principales objetivos generales, mostrar algunos elementos estadísticos del análisis de supervivencia y al mismo tiempo con base en unos datos de clientes bancarios hacer algunas predicciones sobre la pérdida de clientes. 
+
+En la primera sección se hace la estadística descriptiva de los datos con los que se trabajará, para dar un contexto y un panorama general de la naturaleza y característricas de las variables. En la sección dos, haremos procesamiento de los datos en caso de que sea necesario por ejemplo tratar con valores perdidos, valores atípicos, etc. En la tercera sección se plantea y desarrolla el problema de supervivencia. Y finalmente, el la cuarta sección se presentan las principales conclusiones del trabajo. 
+
+
+# 1. Estadística descriptiva.
+
+```{r, echo=FALSE}
+data<-read.csv("train.csv")
+```
+
+La base de datos es de clientes de un banco con las siguientes variables: 
+
+* id: número de fila de la observación, comenzando por el 0.
+* CustomerId: número de cuenta del cliente.
+* Surname: apellido.
+* CreditScore: puntaje de crédito. 
+* Geography: país de residencia. 
+* Gender: género del cliente.
+* Age: edad del cliente. 
+* Tenure: cuántos años ha tenido cuenta bancaria en el Banco.
+* Balance: saldo de la cuenta.
+* NumOfProducts: número de productos bancarios en el Banco.
+* HasCrCard: si tiene o no tarjeta de crédito (sí=1).
+* IsActiveMember: si es miembro activo del banco (sí=1). 
+* EstimatedSalary: salario estimado. 
+* Exited: si el cliente ha dejado el banco por algún periodo (sí=1).
+
+
+## Resumen de los datos numéricos. 
+
+
+
+
+
+
+# 2. Procesamiento de datos.
+
+
+
+# 3. El problema de supervivencia. 
+
+
+
+# 4. Conclusiones
+
+
+
+\newpage
+
+# Referencias
+
+<!-- <div id="refs"></div> -->
+
+
+
+
+
+
+
+
+
+
