@@ -8,6 +8,7 @@ header-includes:
 - \usepackage{multirow,rotating}
 - \pagenumbering{gobble}
 - \usepackage{dcolumn}
+- \usepackage{tabularx}
 output: 
   pdf_document:
     toc: true
@@ -46,6 +47,14 @@ pacman::p_load(tidyverse,
 
 
 
+```{r, echo=FALSE}
+source("funciones.R")
+```
+
+
+
+
+
 # Introducción.
 
 Este documento tiene dos principales objetivos generales, mostrar algunos elementos estadísticos del análisis de supervivencia y al mismo tiempo con base en unos datos de clientes bancarios hacer algunas predicciones sobre la pérdida de clientes. 
@@ -77,9 +86,184 @@ La base de datos es de clientes de un banco con las siguientes variables:
 * Exited: si el cliente ha dejado el banco por algún periodo (sí=1).
 
 
+
+## Selección de variables y verificación de datos faltantes.
+
+Primero tomaremos un subconjunto del conjunto total de variables, omitiremos variables que no utilizaremos en el análisis tales como id, CustomerId, y Surname. Luego mostraremos en el siguiente cuadro que no hay datos faltantes (NA's) para las variables elegidas. 
+
+
+```{r, echo=FALSE}
+datos <- subset(data, select = -c(id, CustomerId, Surname))
+```
+
+
+```{r, echo=FALSE}
+NA_CreditScore<-sum(is.na(datos$CreditScore))
+NA_Geography<-sum(is.na(datos$Geography))
+NA_Gender<-sum(is.na(datos$Gender))
+NA_Age<-sum(is.na(datos$Age))
+NA_Tenure<-sum(is.na(datos$Tenure))
+NA_Balance<-sum(is.na(datos$Balance))
+NA_NumOfProducts<-sum(is.na(datos$NumOfProducts))
+NA_HasCrCard<-sum(is.na(datos$HasCrCard))
+NA_IsActiveMember<-sum(is.na(datos$IsActiveMember))
+NA_EstimatedSalary<-sum(is.na(datos$EstimatedSalary))
+NA_Exited<-sum(is.na(datos$Exited))
+
+```
+
+
+\begin{tabularx}{0.9\textwidth} { 
+  | >{\raggedright\arraybackslash}X 
+  | >{\centering\arraybackslash}X 
+  | >{\centering\arraybackslash}X 
+  | >{\raggedleft\arraybackslash}X | }
+ \hline
+ CreditScore : `r NA_CreditScore` & Geography: `r NA_Geography ` & Gender: `r NA_Gender `  & Age: `r NA_Age` \\
+ \hline
+ Tenure : `r NA_Tenure` & Balance: `r NA_Balance ` & NumOfProducts: `r NA_NumOfProducts `  & HasCrCard: `r NA_HasCrCard` \\
+ \hline
+ IsActiveMember : `r NA_IsActiveMember` & EstimatedSalary: `r NA_EstimatedSalary ` & Exited: `r NA_Exited `  & \\
+\hline
+\end{tabularx}
+
+
+
+
+
 ## Resumen de los datos numéricos. 
 
 
+```{r, echo=FALSE}
+# Establecimiendo de escalas ordinales
+datos$NumOfProducts <- factor(datos$NumOfProducts, levels= c("1","2","3","4"), order=TRUE)
+```
+
+
+```{r, echo=FALSE}
+# Establecimiendo de variables tipo factor no ordinal
+datos$Geography <- factor(datos$Geography)
+datos$Gender <- factor(datos$Gender)
+datos$HasCrCard <- factor(datos$HasCrCard)
+datos$IsActiveMember <- factor(datos$IsActiveMember)
+datos$Exited <- factor(datos$Exited)
+```
+
+
+
+
+```{r, echo=FALSE}
+# Escalas
+tipo <- sapply(datos, class)
+continuas <-  which(tipo == "numeric") # continuas
+enteras <- which(tipo == "integer") # enteras
+numericas <- names(c(continuas,enteras))
+
+# Variables Categóricas
+nominales <- which( tipo == "factor") # categóricas
+ordinales <- which( sapply(datos, is.ordered) )  # ordinales
+fecha <- which(tipo == "Date") # Fecha
+categoricas <- names(c(nominales, ordinales, fecha))
+```
+
+
+
+
+ A continuación se muestra la estadística descriptiva de los valores numéricos relevantes. 
+ 
+```{r, echo=FALSE, include=FALSE}
+stargazer(datos[,numericas])
+```
+ 
+ 
+ \begin{table}[!htbp] \centering 
+  \caption{} 
+  \label{} 
+\begin{tabular}{@{\extracolsep{5pt}}lccccc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+Statistic & \multicolumn{1}{c}{N} & \multicolumn{1}{c}{Mean} & \multicolumn{1}{c}{St. Dev.} & \multicolumn{1}{c}{Min} & \multicolumn{1}{c}{Max} \\ 
+\hline \\[-1.8ex] 
+Age & 165,034 & 38.126 & 8.867 & 18.000 & 92.000 \\ 
+Balance & 165,034 & 55,478.090 & 62,817.660 & 0.000 & 250,898.100 \\ 
+EstimatedSalary & 165,034 & 112,574.800 & 50,292.870 & 11.580 & 199,992.500 \\ 
+CreditScore & 165,034 & 656.454 & 80.103 & 350 & 850 \\ 
+Tenure & 165,034 & 5.020 & 2.806 & 0 & 10 \\ 
+\hline \\[-1.8ex] 
+\end{tabular} 
+\end{table} 
+
+
+
+A continuación se muestran los histogramas, distribuciones y boxplot para las variables numéricas. 
+
+
+
+```{r, echo=FALSE}
+# Histogramas
+par(mfrow= c(1,2) )
+multi.hist(datos[, numericas])
+```
+ 
+ 
+## Variables categóricas.
+
+
+A continuación presentaremos las datos categóricos, por su frecuencia absoluta en la base de datos. 
+
+
+
+```{r, comment=FALSE, warning=FALSE, , echo=FALSE}
+genero = datos %>% group_by(Gender)%>% summarise(n = n())
+plot1<-ggplot(data = genero, aes(x = Gender, y = n))+
+  geom_bar(stat = "identity", fill = "royalblue4")+
+  labs(x = "Genero", y = " ")+
+  ggtitle(" ")+theme_bw()+
+  theme(axis.text.x = element_text(angle=90))
+
+geography = datos %>% group_by(Geography)%>% summarise(n = n())
+plot2<-ggplot(data = geography, aes(x = Geography, y = n))+
+  geom_bar(stat = "identity", fill = "royalblue4")+
+  labs(x = "Geografia", y = " ")+
+  ggtitle(" ")+theme_bw()+
+  theme(axis.text.x = element_text(angle=90))
+
+NumOfProducts = datos %>% group_by(NumOfProducts)%>% summarise(n = n())
+plot3<-ggplot(data = NumOfProducts, aes(x = NumOfProducts, y = n))+
+  geom_bar(stat = "identity", fill = "royalblue4")+
+  labs(x = "Numero de productos", y = " ")+
+  ggtitle(" ")+theme_bw()+
+  theme(axis.text.x = element_text(angle=90))
+
+HasCrCard = datos %>% group_by(HasCrCard)%>% summarise(n = n())
+plot4<-ggplot(data = HasCrCard, aes(x = HasCrCard, y = n))+
+  geom_bar(stat = "identity", fill = "royalblue4")+
+  labs(x = "Si tiene tarjeta", y = " ")+
+  ggtitle(" ")+theme_bw()+
+  theme(axis.text.x = element_text(angle=90))
+
+plot_grid(plot1, plot2, plot3, plot4, ncol=2)
+```
+
+
+```{r, comment=FALSE, warning=FALSE, echo=FALSE}
+
+IsActiveMember = datos %>% group_by(IsActiveMember )%>% summarise(n = n())
+plot1<-ggplot(data = IsActiveMember, aes(x = IsActiveMember, y = n))+
+  geom_bar(stat = "identity", fill = "royalblue4")+
+  labs(x = "Es miembro activo", y = " ")+
+  ggtitle(" ")+theme_bw()+
+  theme(axis.text.x = element_text(angle=90))
+
+Exited= datos %>% group_by(Exited)%>% summarise(n = n())
+plot2<-ggplot(data = Exited, aes(x = Exited, y = n))+
+  geom_bar(stat = "identity", fill = "royalblue4")+
+  labs(x = "Si salió", y = " ")+
+  ggtitle(" ")+theme_bw()+
+  theme(axis.text.x = element_text(angle=90))
+
+plot_grid(plot1, plot2, ncol=2)
+```
 
 
 
