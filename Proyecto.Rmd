@@ -42,7 +42,8 @@ pacman::p_load(tidyverse,
                tidyr, imager,lubridate,tseries, astsa, growthrates, tis, dynlm, 
                readxl, foreign, hrbthemes, gtsummary, corrplot, lm.beta, ggfortify,
                AER, lmtest, sandwich,GGally, performance, flextable, see, qqplotr,
-               ggrepel, patchwork,boot, rempsyc, report,multcomp, car, broom)
+               ggrepel, patchwork,boot, rempsyc, report,multcomp, car, broom, 
+               corrplot)
 ```
 
 
@@ -62,7 +63,7 @@ Este documento tiene dos principales objetivos generales, mostrar algunos elemen
 En la primera sección se hace la estadística descriptiva de los datos con los que se trabajará, para dar un contexto y un panorama general de la naturaleza y característricas de las variables. En la sección dos, haremos procesamiento de los datos en caso de que sea necesario por ejemplo tratar con valores perdidos, valores atípicos, etc. En la tercera sección se plantea y desarrolla el problema de supervivencia. Y finalmente, el la cuarta sección se presentan las principales conclusiones del trabajo. 
 
 
-# 1. Estadística descriptiva.
+# 1. Estadística descriptiva y procesamiento de datos.
 
 ```{r, echo=FALSE}
 data<-read.csv("train.csv")
@@ -131,7 +132,7 @@ NA_Exited<-sum(is.na(datos$Exited))
 
 
 
-## Resumen de los datos numéricos. 
+## Resumen de los datos numéricos y detección de outliers. 
 
 
 ```{r, echo=FALSE}
@@ -169,7 +170,9 @@ categoricas <- names(c(nominales, ordinales, fecha))
 
 
 
- A continuación se muestra la estadística descriptiva de los valores numéricos relevantes. 
+A continuación se muestra la estadística descriptiva de los valores numéricos relevantes. Son $165,034$ observaciones, con edades entre 18 y 92 años, con un balance de $0$ a $250,898$ unidades monetarias, con salario estimado de entre $11.58$ a $199,992.5$, un score de crédito de 350 a 850, y tenencia de cuenta bancaria de 0 a 10 años. El promedio de edad es de 38 años, con un balance promedio de $55,478$ unidades monetarias, un promedio de salario estimado de $112,575.8$, un promedio de credit score de $656.45$, y un promedio de tenencia de cuenta de 5 años. 
+
+
  
 ```{r, echo=FALSE, include=FALSE}
 stargazer(datos[,numericas])
@@ -195,11 +198,15 @@ Tenure & 165,034 & 5.020 & 2.806 & 0 & 10 \\
 
 
 
-A continuación se muestran los histogramas, distribuciones y boxplot para las variables numéricas. 
+
+
+A continuación se muestran los histogramas de frecuencias relativas, distribuciones o densidades y boxplot conjuntas para las variables numéricas.  Se pueden observar distribuciones multimodales, a escepción de la variable de edad. Por ejemplo, el balance tiene un sesgo muy notable a la izquierda, mientras que el salario estimado presenta una distribución multimodal muy irregular, y el credit score  por ser una variable discreta, se percibe con varios saltos. 
+
+No se observan outliers importantes, en el caso de la edad, hay valores de 92 años, pero no los consideramos outliers, por lo que no quitamos estos valores que corresponde a 11 observaciones. 
 
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.width=7}
 # Histogramas
 par(mfrow= c(1,2) )
 multi.hist(datos[, numericas])
@@ -209,35 +216,35 @@ multi.hist(datos[, numericas])
 ## Variables categóricas.
 
 
-A continuación presentaremos las datos categóricos, por su frecuencia absoluta en la base de datos. 
+A continuación presentaremos las datos categóricos, por su frecuencia absoluta en la base de datos. En la base se tienen $71,884$ mujeres y $93,150$ hombres; $94,215$ son de Francia, $34,606$ de Alemania y $36,213$ de España; $77,374$ tiene un solo producto bancario, $84,291$ tienen dos, mientras que $2,894$ tienen tres productos, y $475$ tienen 4 productos; $40,606$ no tiene tarjeta de crédito y $124,428$ sí tiene; $82,885$ no es miembro activo y $82,149$ son miembros activos; y $130,113$ permanecen con el banco, mientras que $34,921$ salieron del banco por algún periodo.     
 
 
 
-```{r, comment=FALSE, warning=FALSE, , echo=FALSE}
+```{r, comment=FALSE, warning=FALSE, , echo=FALSE, fig.height=5}
 genero = datos %>% group_by(Gender)%>% summarise(n = n())
 plot1<-ggplot(data = genero, aes(x = Gender, y = n))+
-  geom_bar(stat = "identity", fill = "royalblue4")+
+  geom_bar(stat = "identity", fill = "skyblue")+
   labs(x = "Genero", y = " ")+
   ggtitle(" ")+theme_bw()+
   theme(axis.text.x = element_text(angle=90))
 
 geography = datos %>% group_by(Geography)%>% summarise(n = n())
 plot2<-ggplot(data = geography, aes(x = Geography, y = n))+
-  geom_bar(stat = "identity", fill = "royalblue4")+
+  geom_bar(stat = "identity", fill = "skyblue")+
   labs(x = "Geografia", y = " ")+
   ggtitle(" ")+theme_bw()+
   theme(axis.text.x = element_text(angle=90))
 
 NumOfProducts = datos %>% group_by(NumOfProducts)%>% summarise(n = n())
 plot3<-ggplot(data = NumOfProducts, aes(x = NumOfProducts, y = n))+
-  geom_bar(stat = "identity", fill = "royalblue4")+
+  geom_bar(stat = "identity", fill = "skyblue")+
   labs(x = "Numero de productos", y = " ")+
   ggtitle(" ")+theme_bw()+
   theme(axis.text.x = element_text(angle=90))
 
 HasCrCard = datos %>% group_by(HasCrCard)%>% summarise(n = n())
 plot4<-ggplot(data = HasCrCard, aes(x = HasCrCard, y = n))+
-  geom_bar(stat = "identity", fill = "royalblue4")+
+  geom_bar(stat = "identity", fill = "skyblue")+
   labs(x = "Si tiene tarjeta", y = " ")+
   ggtitle(" ")+theme_bw()+
   theme(axis.text.x = element_text(angle=90))
@@ -250,14 +257,14 @@ plot_grid(plot1, plot2, plot3, plot4, ncol=2)
 
 IsActiveMember = datos %>% group_by(IsActiveMember )%>% summarise(n = n())
 plot1<-ggplot(data = IsActiveMember, aes(x = IsActiveMember, y = n))+
-  geom_bar(stat = "identity", fill = "royalblue4")+
+  geom_bar(stat = "identity", fill = "skyblue")+
   labs(x = "Es miembro activo", y = " ")+
   ggtitle(" ")+theme_bw()+
   theme(axis.text.x = element_text(angle=90))
 
 Exited= datos %>% group_by(Exited)%>% summarise(n = n())
 plot2<-ggplot(data = Exited, aes(x = Exited, y = n))+
-  geom_bar(stat = "identity", fill = "royalblue4")+
+  geom_bar(stat = "identity", fill = "skyblue")+
   labs(x = "Si salió", y = " ")+
   ggtitle(" ")+theme_bw()+
   theme(axis.text.x = element_text(angle=90))
@@ -268,7 +275,39 @@ plot_grid(plot1, plot2, ncol=2)
 
 
 
-# 2. Procesamiento de datos.
+# 2. Relación entre variable de censura y covariables.
+
+
+
+
+```{r, echo=FALSE}
+fitlogit=glm(Exited~.-NumOfProducts-IsActiveMember, family = binomial(link="logit"), data=datos)
+summary(fitlogit)
+```
+
+
+La pueba de los supuestos del modelo.
+
+
+```{r, echo=FALSE, warning=FALSE,message=FALSE, fig.width = 8, fig.height = 4}
+library(DHARMa)  #Los residuales simulados también son útiles en este caso
+set.seed(123)
+fitlogitres <- simulateResiduals(fittedModel = fitlogit)
+plot(fitlogitres)
+```
+
+
+
+```{r, echo=FALSE}
+deviance_df<-deviance(fitprobit)/df.residual(fitprobit)
+```
+
+
+
+La regla de dedo para verificar el **parámetro de dispersión** de 1, con la devianza de residuales entre grados de libertad, muestra un valor de `r deviance_df`, lo cual se acerca a 1. 
+
+
+
 
 
 
@@ -276,7 +315,7 @@ plot_grid(plot1, plot2, ncol=2)
 
 
 
-# 4. Conclusiones
+# Conclusiones
 
 
 
