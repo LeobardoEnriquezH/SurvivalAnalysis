@@ -1,0 +1,321 @@
+---
+title: "Tarea 5 a"
+author: "Leobardo Enriquez Hernández & Saúl Tlahuiz Tenorio"
+date: "2024-05-16"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+      #echo = FALSE, #Podemos evitar que se muestre el código en general
+      fig.pos = 'H', #Posicionamos todas las gráficas en el lugar donde se calculan
+      fig.align = 'center', #Posicionamos todas las gráficas en el lugar en el centro del documento
+      message = FALSE, #Evitamos los mensajes
+      warning = FALSE, #Evitamos los warnings
+      comment = NA #Evitamos los comentarios
+)
+```
+
+
+
+```{r, echo=FALSE, include=FALSE}
+library(tidyselect)
+library(survival)
+library(survminer)
+library(dplyr)
+library(ggplot2)
+library(gridExtra)
+library("MASS")
+library("fitdistrplus")
+library(flexsurv)
+library(ranger)
+library(ggfortify)
+```
+
+## Introducción. 
+
+```{r, echo=FALSE}
+db<-read.csv("data09.csv")
+db$Type<-as.factor(db$Type)
+db$Status<-as.factor(db$Status)
+```
+
+El archivo ``data09.csv`` contiene datos que modelan la distribución de ingresos (pesos) en una población, donde los ingresos más altos son menos probables a medida que aumentan. El objetivo es el de hacer un análisis de supervivencia, por lo que analizaremos los siguientes puntos. 
+
+* Identificar la distribución de probabilidad asociada.
+* Proponer distribuciones de probabilidad de acuerdo a estadísticas básicas de los datos e ir descartando.
+* Consideraremos el contexto para explicar las propuestas cuando sea posible.
+* Se utilizarán pruebas de hipótesis para comprobar las distribuciones mencionadas.
+* Se utilizarán herramientas computaciones y gráficas para tomar la decisión.
+* Se dará interpretación a los parámetros de la distribución si es posible.
+* Se obtendrán resúmenes estadísticos asociados al análisis de supervivencia, parámetros poblacionales, funciones de riesgo, etc.
+
+## Desarrollo del análisis para las distribuciones. 
+
+### Estadística descriptiva, NA's y outliers.
+
+La base de datos consta de 10,000 observaciones, con tres variables: ``Time``, la cual es numérica contínua; ``Type``, la cual es categórica con 4 categorías, y segrega la información de acuerdo a diferentes variables uniformes y hace que la distribución de probabilidad cambie un poco en sus parámetros; y ``Status``, que es una variable binaria. En el siguiente cuadro es posible observar que el valor promedio de la variable Time es de 158.639, con una mediana de 162.909, un mínimo de 3.135 y un máximo de 212.858. Por otro lado, las cuatro clasificaciones tienen el mismo número de observaciones para Type, y para el caso de Status tenemos un poco más de observaciones en la clasificación 0, que son 5262.  
+
+```{r, echo=FALSE}
+summary(db)
+```
+
+Cabe mencionar que no encontramos NA's en la base de datos.
+
+```{r, echo=FALSE}
+("NA's:")
+db$Time %>% is.na() %>% sum()
+```
+ 
+
+En el siguiente Boxplot (izquierda) se muestra qué tan dispersa es la variable ``Time``, y los outliers o valores atípicos, lo que nos permite ver si será necesaria una limpieza de los datos omitiendo éstos outliers. Además, a la derecha se muestra el Boxplot con los datos recortados, se tomó el cuantil 5, con lo que quitamos las primeras 500 observaciones de las 10 mil.  
+
+
+```{r, echo=FALSE}
+q<-db$Time %>% quantile(.05)
+```
+
+```{r, echo=FALSE, fig.height=3, fig.width=7}
+par(mfrow = c(1, 2))
+boxplot1<-db%>% ggplot(aes(x = Time)) + geom_boxplot() + theme_bw()
+boxplot2<-db%>%filter(Time>q ) %>% ggplot(aes(x = Time)) + geom_boxplot()+ theme_bw()
+grid.arrange(boxplot1, boxplot2, nrow = 1)
+```
+
+### Densidad empírica.
+
+Procedemos a graficar la densidad incluyendo todos los datos (izquierda) y con los datos recortados (derecha).  
+
+```{r, echo=FALSE, fig.height=3, fig.width=7}
+par(mfrow = c(1, 2))
+density1<-db %>% ggplot(aes(x = Time)) + geom_density() + theme_bw()
+db1 <- db %>% filter(Time>=110.7846)
+db1$Type<-as.factor(db1$Type)
+db1$Status<-as.factor(db1$Status)
+density2<-db1 %>% ggplot(aes(x = Time)) + geom_density() + theme_bw()
+grid.arrange(density1, density2, nrow = 1)
+```
+
+
+
+### Ajuste de los modelos de distribución general. 
+
+A partir de la densidad empírica anterior, nuestra distribución está sesgada a la izquierda y parece ser un tipo de distribución cercana a una Gama o Weibull. La gráfica de Cullen y Frey permite eximir algunas distribuciones mediante los parámetros de asimetría y curtosis utilizando la función descdist; los valores de arranque provienen de muestras aleatorias (con reemplazo) de los datos. A partir de este gráfico de Cullen y Frey y de los gráficos empíricos anteriores, nuestras opciones para ajustes parecerían estar dentro de las distribuciones disponibles en el paquete fitdistrplus: Weibull, Gamma y Exponential. 
+
+
+Con  **datos totales** tenemos tenemos el siguiente resultado.  
+
+```{r, echo=FALSE, fig.height=4}
+descdist(db$Time, discrete=FALSE, boot=500)
+```
+
+Con los **datos recortados** tenemos el siguiente resultado. 
+
+```{r, echo=FALSE,fig.height=4}
+descdist(db1$Time, discrete=FALSE, boot=500)
+```
+
+Estas 3 distribuciones (Weibull, Gamma y Exponential) se ajustan a cuatro parámetros de ajuste clásicos, siendo el más importante la densidad y el gráfico CDF. Por lo que presentamos algunos resultados con los **datos totales**.
+
+```{r, echo=FALSE, warning=FALSE}
+fw <- fitdist(db$Time, "weibull")
+fg <- fitdist(db$Time, "gamma")
+fe <- fitdist(db$Time, "exp")
+par(mfrow = c(2, 2))
+plot.legend <- c("Weibull", "gamma", "expo")
+denscomp(list(fw, fg, fe), legendtext = plot.legend)
+qqcomp(list(fw, fg, fe), legendtext = plot.legend)
+cdfcomp(list(fw, fg, fe), legendtext = plot.legend)
+ppcomp(list(fw, fg, fe), legendtext = plot.legend)
+```
+A partir de las métricas de ajuste trazadas anteriormente, parece que Weibull y Gamma son los mejores candidatos. Observemos en la siguiente Figura que Weibull es el que mejor se ajusta para los **datos totales**. 
+
+
+```{r, echo=FALSE, fig.height=3.5}
+denscomp(list(fw, fg), legendtext = c("Weibull", "gamma"))
+```
+
+
+Con los **datos recortados**.
+
+
+```{r, echo=FALSE, warning=FALSE}
+fw <- fitdist(db1$Time, "weibull")
+fg <- fitdist(db1$Time, "gamma")
+fe <- fitdist(db1$Time, "exp")
+par(mfrow = c(2, 2))
+plot.legend <- c("Weibull", "gamma", "expo")
+denscomp(list(fw, fg, fe), legendtext = plot.legend)
+qqcomp(list(fw, fg, fe), legendtext = plot.legend)
+cdfcomp(list(fw, fg, fe), legendtext = plot.legend)
+ppcomp(list(fw, fg, fe), legendtext = plot.legend)
+```
+
+
+A partir de las métricas de ajuste trazadas anteriormente, parece que Weibull y Gamma son los mejores candidatos. Observemos en la siguiente Figura que Weibull es el que mejor se ajusta para los **datos recortados**.  
+
+
+```{r, echo=FALSE, fig.height=3.5}
+denscomp(list(fw, fg), legendtext = c("Weibull", "gamma"))
+```
+
+
+Ahora tenemos los siguientes parámetros estimados, para las distribuciones Weibull y Gama para los **datos totales**.
+
+
+```{r, echo=FALSE, warning=FALSE}
+fit_Weibull<-fitdist(db$Time, "weibull")
+fit_Weibull
+```
+
+
+
+```{r, echo=FALSE, warning=FALSE}
+fit_gamma<-fitdist(db$Time, "gamma")
+fit_gamma
+```
+
+
+Ahora tenemos los siguientes parámetros estimados, para las distribuciones Weibull y Gama para los **datos recortados**.
+
+```{r, echo=FALSE, warning=FALSE}
+fit_Weibull<-fitdist(db1$Time, "weibull")
+fit_Weibull
+```
+
+
+
+```{r, echo=FALSE, warning=FALSE}
+fit_gamma<-fitdist(db1$Time, "gamma")
+fit_gamma
+```
+
+
+Para los **datos totales** tenemos la siguiente Grafica, que muestra los ajustes tanto de la Gama como la Weibull a la distribución de los datos (izquierda). Para los **datos recortados** tenemos la siguiente Grafica, que muestra los ajustes tanto de la Gama como la Weibull a la distribución de los datos (derecha). 
+
+```{r, echo=FALSE, fig.height=4, fig.width=7}
+set.seed(340)
+par(mfrow = c(1, 2))
+distribuciones1<-db %>% ggplot(aes(x = Time, color = "datos")) + geom_density() + 
+  geom_density(aes(x, color = "gamma"), 
+               data = tibble(x = rgamma(500, shape = 31.6104024, rate = 0.1992656))) + 
+  geom_density(aes(x, color = "weibull"), 
+               data = tibble(x = rweibull(500, shape = 7.948114, scale = 168.720231))) + theme_bw() 
+
+distribuciones2<-db %>% ggplot(aes(x = Time, color = "datos")) + geom_density() + 
+  geom_density(aes(x, color = "gamma"), 
+               data = tibble(x = rgamma(500, shape = 60.3623749	, rate = 0.3721853	))) + 
+  geom_density(aes(x, color = "weibull"), 
+               data = tibble(x = rweibull(500, shape = 9.323776	, scale = 170.996408))) + theme_bw()
+
+grid.arrange(distribuciones1, distribuciones2, nrow = 1)
+```
+
+
+
+### Ajuste del modelo de distribución final por categorías Type. 
+
+
+Dado el mejor ajuste, decidimos tomar el modelo **Weibull** como distribución base para los **datos recortados**, por lo que se utilizará este modelo para ajustar nuevamente la información pero ahora segregada por las clasificaciones de la variable Type. Entonces, tendremos 4 funciones de distribución del mismo tipo pero con diferentes parámetros, uno por cada estrato. 
+
+
+Parámetros para Type 1. Weibull. 
+
+```{r, echo=FALSE, warning=FALSE}
+db1_1<-db1%>%filter(Type==1)
+fit_Weibull_1<-fitdist(db1_1$Time, "weibull")
+fit_Weibull_1
+```
+
+Parámetros para Type 2. Weibull. 
+
+
+```{r, echo=FALSE, warning=FALSE}
+db1_2<-db1%>%filter(Type==2)
+fit_Weibull_2<-fitdist(db1_2$Time, "weibull")
+fit_Weibull_2
+```
+
+
+Parámetros para Type 3. Weibull. 
+
+
+```{r, echo=FALSE, warning=FALSE}
+db1_3<-db1%>%filter(Type==3)
+fit_Weibull_3<-fitdist(db1_3$Time, "weibull")
+fit_Weibull_3
+```
+
+Parámetros para Type 4. Weibull. 
+
+
+```{r, echo=FALSE, warning=FALSE}
+db1_4<-db1%>%filter(Type==4)
+fit_Weibull_4<-fitdist(db1_4$Time, "weibull")
+fit_Weibull_4
+```
+
+
+ A continuación se muestra la Gráfica de las funciones de distribución para las cuatro clasificaciones. 
+ 
+ 
+```{r, echo=FALSE, fig.height=4, fig.width=7}
+set.seed(340)
+db1 %>% ggplot(aes(x = Time, color = "datos")) + geom_density() + 
+  geom_density(aes(x, color = "weibull1"), 
+               data = tibble(x = rweibull(500, shape = 9.323827, scale = 171.181605))) + 
+  geom_density(aes(x, color = "weibull2"), 
+               data = tibble(x = rweibull(500, shape = 9.181701, scale = 170.791464))) +
+  geom_density(aes(x, color = "weibull3"), 
+               data = tibble(x = rweibull(500, shape = 9.289101, scale = 170.799229))) +
+  geom_density(aes(x, color = "weibull4"), 
+               data = tibble(x = rweibull(500, shape = 9.507079, scale = 171.213707))) + 
+  theme_bw() 
+```
+
+## Análisis de supervivencia.
+
+Usaremos survfit() y Surv() para construir el objeto de supervivencia estándar, usando Kaplan Meier. Usamos la fórmula $survfit(Surv(Time, Status)\sim 1)$ para producir las estimaciones de Kaplan-Meier de la probabilidad de supervivencia en el tiempo para cada una de las categorías de Type. A continuación, mostramos las curvas de supervivencia obtenidas, las cuales podemos interpretar como la probabilidad de obtener mayores ingresos, por cada uno de los cuatro grupos en que se clasificaron. El primer grupo, su probabilidad de obtner mayores ingresos cae más rápidamente que el segundo grupo, y la probabilidad del segundo grupo cae más rápido que la del tecer grupo, y el mismo comportamiento se observa con el cuarto grupo.   
+
+
+```{r, echo=FALSE}
+db1_1 <- db %>% filter(Type == 1)
+db1_2 <- db %>% filter(Type == 2)
+db1_3 <- db %>% filter(Type == 3)
+db1_4 <- db %>% filter(Type == 4)
+
+ajusteSurv_1 <- survfit(Surv(db1_1$Time, db1_1$Status)~1)
+ajusteSurv_1$surv<-ajusteSurv_1$pstate[,1]
+ajusteSurv_2 <- survfit(Surv(db1_2$Time, db1_2$Status)~1)
+ajusteSurv_2$surv<-ajusteSurv_2$pstate[,1]
+ajusteSurv_3 <- survfit(Surv(db1_3$Time, db1_3$Status)~1)
+ajusteSurv_3$surv<-ajusteSurv_3$pstate[,1]
+ajusteSurv_4 <- survfit(Surv(db1_4$Time, db1_4$Status)~1)
+ajusteSurv_4$surv<-ajusteSurv_4$pstate[,1]
+
+tab1<-tibble(time = ajusteSurv_1$time, surv = ajusteSurv_1$surv)
+tab4<-tibble(time = ajusteSurv_4$time, surv = ajusteSurv_4$surv)
+tab<-cbind(tab1,tab4)
+names(tab)<-c("time1", "surv1", "time4", "surv4")
+tab$dif<-tab$time4-tab$time1
+
+tibble(time = ajusteSurv_1$time, surv = ajusteSurv_1$surv) %>% 
+  ggplot(aes(x = time, y = surv, fill = "Type1")) + geom_step(aes(color = "1")) + 
+  geom_step(aes(color = "2"),data = tibble(time = ajusteSurv_2$time, surv = ajusteSurv_2$surv)) + 
+  geom_step(aes(color = "3"),data = tibble(time = ajusteSurv_3$time, surv = ajusteSurv_3$surv)) + 
+  geom_step(aes(color = "4"),data = tibble(time = ajusteSurv_4$time, surv = ajusteSurv_4$surv)) +
+  scale_color_manual(labels = c("1" = "Type1", "2" = "Type2", "3" = "Type3", "4" = "Type4"),
+                     values = c("1" = "goldenrod2", "2" = "darkorchid3", "3" = "cornflowerblue", "4" = "deeppink2")) + theme_bw()
+```
+
+
+
+## Conclusiones
+
+Como conclusiones generales tenemos que la información de los datos proporcionados, tine un sesgo a la izquierda y en un análisis con outliers, de decidió quitar el quinto percentil de los datos, que corresponde a 500 observaciones de un total de 10 mil. Esto porque mejora el ajuste al modelo de distribución Weibull elegido. Ya con este modelo Weibull y los datos recortados se procedió a realizar un análisis de supervivencia con la base de datos, en la que se planteó la curva de supervivencia de los ingresos clasificados en cuatro grupos. En general observados que la probabilidad de tener mayores ingresos cae más rápido para el grupo 1, que para el grupo 2, y así sucesivamente hasta el grupo 4. Esto es, la probabilidad de aumentar los ingresos, cae menos rápidamente que los demás para el grupo 4.  
+
+
+
+
+
+
