@@ -4,24 +4,24 @@ for (i in 1:nvar) {
   name=names(df)[i]
   x <- df[,i] 
   hist(x, freq = FALSE,
-       main="Histograma vs Kernel", ylab="Frecuencia Relativa", xlab=name, 
+       main="Histograma y Boxplot", ylab="Frecuencia Relativa", xlab=name, 
        border="white", cex=0.4, cex.main=1, col="azure3",
        bty = "n");grid()
   
-  mu <- mean(x); s <- sd(x)
-  lines( density(x, na.rm = T ) )
-  curve( dnorm(x, mu, s), add=TRUE, col="darkgray" )
+  #mu <- mean(x); s <- sd(x)
+  #lines( density(x, na.rm = T ) )
+  #curve( dnorm(x, mu, s), add=TRUE, col="darkgray" )
   
-  legend("topright", 
-         legend = c("Densidad Normal","Densidad Kernel"), 
-         col = c("darkgray","black"),
-         pch = c(1,12), bty = "n", pt.cex = 1, cex = 1, text.col = "black", horiz = F, 
-         inset = c(0.1, 0.1))
+  #legend("topright", 
+  #       legend = c("Densidad Normal","Densidad Kernel"), 
+  #       col = c("darkgray","black"),
+  #       pch = c(1,12), bty = "n", pt.cex = 1, cex = 1, text.col = "black", horiz = F, 
+  #       inset = c(0.1, 0.1))
   
   # Boxplot
   par(new = TRUE)
   boxplot(x, horizontal = TRUE, axes = F, border = "black",
-          lwd = 2, col = rgb(0, 1, 1, alpha = 0.15), cex=0.4)
+          lwd = 2, col = rgb(0, 1, 1, alpha = 0.15), cex=0.4, pars=list(outcol="red"))
 }}
 
 # Normalizacion Min-Max
