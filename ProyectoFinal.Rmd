@@ -3,7 +3,7 @@ title: ""
 date: ""
 header-includes:
 - \usepackage[utf8]{inputenc}
-- \usepackage[spanish]{babel}
+- \usepackage[spanish, mexico]{babel}
 - \usepackage{graphicx}
 - \usepackage{multirow,rotating}
 - \pagenumbering{gobble}
@@ -82,7 +82,7 @@ En la primera sección se hace la estadística descriptiva de los datos con los 
 data<-read.csv("train.csv")
 ```
 
-La base de datos es de clientes de un banco con las siguientes variables: 
+El conjunto de datos es de clientes de un banco con las siguientes variables: 
 
 * id: número de fila de la observación, comenzando por el 0.
 * CustomerId: número de cuenta del cliente.
@@ -209,24 +209,25 @@ Tenure & 165,034 & 5.020 & 2.806 & 0 & 10 \\
 
 
 
-A continuación se muestran los histogramas de frecuencias relativas y boxplot para las variables numéricas.   Por ejemplo, el balance tiene un sesgo muy notable a la izquierda ya que hay muchos valores nulos para esta variable, mientras que el salario estimado presenta una distribución multimodal muy irregular, y el credit score  por ser una variable discreta se percibe con varios saltos. 
+A continuación se muestran los histogramas de frecuencias relativas y boxplot para las variables numéricas, a excepción de ``Tenure`` que es nuestra variable de tiempo que analizaremos con más detalle más adelante. Por ejemplo, el balance tiene un sesgo muy notable a la izquierda ya que hay muchos valores nulos para esta variable, mientras que el salario estimado presenta una distribución multimodal muy irregular, y el credit score  por ser una variable discreta se percibe con varios saltos. 
 
 Se observan ourliers en la variable de la edad (Age) después de los 55 años, además, después de 85 años hay un brinco de valores de 92 años que corresponde a 11 observaciones. En la variable score de céditos (CreditScore) también hay outliers, los cuales son 80 observaciones con valores menores a 410.    
 
 
 
-```{r, echo=FALSE, fig.width=7}
+```{r, echo=FALSE, fig.width=8, fig.height=4}
 # Histogramas
+numericas1<-c("Age",  "Balance", "EstimatedSalary", "CreditScore")
 par(mfrow= c(1,2) )
-multi.hist(datos[, numericas])
+multi.hist(datos[, numericas1])
 ```
 
 
-A continuación presentaremos las datos categóricos, por su frecuencia absoluta en la base de datos. En la base se tienen $71,884$ mujeres y $93,150$ hombres; $94,215$ son de Francia, $34,606$ de Alemania y $36,213$ de España; $77,374$ tiene un solo producto bancario, $84,291$ tienen dos, mientras que $2,894$ tienen tres productos, y $475$ tienen 4 productos; $40,606$ no tiene tarjeta de crédito y $124,428$ sí tiene; $82,885$ no es miembro activo y $82,149$ son miembros activos; y $130,113$ permanecen con el banco, mientras que $34,921$ salieron del banco por algún periodo, es decir, permanecieron el 79% de los clientes.      
+A continuación presentaremos las datos categóricos, por su frecuencia absoluta en el conjunto de datos.  Se tienen $71,884$ mujeres y $93,150$ hombres; $94,215$ son de Francia, $34,606$ de Alemania y $36,213$ de España; $77,374$ tiene un solo producto bancario, $84,291$ tienen dos, mientras que $2,894$ tienen tres productos, y $475$ tienen 4 productos; $40,606$ no tiene tarjeta de crédito y $124,428$ sí tiene; $82,885$ no es miembro activo y $82,149$ son miembros activos; y $130,113$ permanecen con el banco, mientras que $34,921$ salieron del banco en algún periodo, es decir, permanecieron el 79% de los clientes.      
 
 
 
-```{r, comment=FALSE, warning=FALSE, , echo=FALSE, fig.height=5}
+```{r, comment=FALSE, warning=FALSE, , echo=FALSE, fig.height=2}
 genero = datos %>% group_by(Gender)%>% summarise(n = n())
 plot1<-ggplot(data = genero, aes(x = Gender, y = n))+
   geom_bar(stat = "identity", fill = "skyblue")+
@@ -241,6 +242,11 @@ plot2<-ggplot(data = geography, aes(x = Geography, y = n))+
   ggtitle(" ")+theme_bw()+
   theme(axis.text.x = element_text(angle=0))
 
+plot_grid(plot1, plot2, ncol=2)
+```
+
+
+```{r, comment=FALSE, warning=FALSE, , echo=FALSE, fig.height=2}
 NumOfProducts = datos %>% group_by(NumOfProducts)%>% summarise(n = n())
 plot3<-ggplot(data = NumOfProducts, aes(x = NumOfProducts, y = n))+
   geom_bar(stat = "identity", fill = "skyblue")+
@@ -255,11 +261,15 @@ plot4<-ggplot(data = HasCrCard, aes(x = HasCrCard, y = n))+
   ggtitle(" ")+theme_bw()+
   theme(axis.text.x = element_text(angle=0))
 
-plot_grid(plot1, plot2, plot3, plot4, ncol=2)
+plot_grid(plot3, plot4, ncol=2)
 ```
 
 
-```{r, comment=FALSE, warning=FALSE, echo=FALSE}
+
+
+
+
+```{r, comment=FALSE, warning=FALSE, echo=FALSE, fig.height=2}
 
 IsActiveMember = datos %>% group_by(IsActiveMember )%>% summarise(n = n())
 plot1<-ggplot(data = IsActiveMember, aes(x = IsActiveMember, y = n))+
@@ -279,7 +289,7 @@ plot_grid(plot1, plot2, ncol=2)
 ```
 
 
-Haremos dos principales cambios en la base de datos, primero quitaremos los ouliers de la edad 92 años y luego modificaremos la variable del número de productos para tener una binaria que indique que se tiene 1 producto contratado o se tienen 2 o más productos, pues hay muy pocas observaciones que tienen 3 o 4 productos.
+Haremos dos principales cambios en el conjunto de datos, primero quitaremos los outliers de la edad 92 años y luego modificaremos la variable del número de productos para tener una binaria que indique que se tiene 1 producto contratado o se tienen 2 o más productos, pues hay muy pocas observaciones que tienen 3 o 4 productos.
 
 
 ```{r, echo=FALSE}
@@ -300,81 +310,23 @@ datos<-datos%>%filter(Age<86)
 ```
 
 
-A continuación, mostramos la gráfica de Cullen y Frey para la variable ``Age``, permite eximir algunas distribuciones mediante los parámetros de asimetría y curtosis utilizando la función descdist; los valores de arranque provienen de muestras aleatorias con reemplazo (bootstrap) de los datos. A partir de este gráfico, nuestras opciones para ajustes parecerían estar dentro de las distribuciones disponibles en el paquete fitdistrplus: Weibull, Gamma y Exponential. 
+La variable de tiempo en este trabajo es ``Tenure``, y es una variable aleatoria discreta por tener valores discretos de 0 a 10 años, a continuación mostramos el histograma de frecuencias relativas.  
 
-```{r, echo=FALSE, fig.height=4.5, results='hide'}
-descdist(datos$Age, discrete=FALSE, boot=500)
+
+```{r, echo=FALSE, fig.height=4}
+tab<-table(datos$Tenure)
+tab1<-tab/length(datos$Tenure)
+bp<-barplot(tab1, col="skyblue", main="Tenure")
 ```
 
 
-Estas 3 distribuciones (Weibull, Gamma y Exponential) se ajustan a cuatro parámetros de ajuste clásicos, siendo el más importante la densidad y el gráfico CDF. A partir de las métricas de ajuste trazadas a continuación, parece que Weibull y Gamma son los mejores candidatos. Observemos en la siguiente Figura que Gamma es el que mejor se ajusta.
+A continuación, mostramos la gráfica de Cullen y Frey para ``Tenure``, lo que permite eximir algunas distribuciones mediante los parámetros de asimetría y curtosis utilizando la función descdist para datos discretos; los valores de arranque provienen de muestras aleatorias con reemplazo (bootstrap) de los datos. A partir de este gráfico, nuestras opciones para ajustes parecerían no estar cercanas a ninguna distribución disponible para esta prueba. 
 
-```{r, echo=FALSE, warning=FALSE, fig.height=6, fig.width=6}
-set.seed(4070)
-fw <- fitdist(datos$Age, "weibull")
-fg <- fitdist(datos$Age, "gamma")
-fe <- fitdist(datos$Age, "exp")
-par(mfrow = c(2, 2))
-plot.legend <- c("Weibull", "gamma", "expo")
-denscomp(list(fw, fg, fe), legendtext = plot.legend)
-qqcomp(list(fw, fg, fe), legendtext = plot.legend)
-cdfcomp(list(fw, fg, fe), legendtext = plot.legend)
-ppcomp(list(fw, fg, fe), legendtext = plot.legend)
+
+
+```{r, echo=FALSE, fig.height=4.5, fig.height=4.3, fig.width=7, results='hide'}
+descdist(datos$Tenure, discrete=TRUE, boot=500)
 ```
-
-Obtenemos los parámetros estimados para las distribuciones Gama y Weibull, luego ajustamos estas distribuciones con las estimaciones y comparamos con la densidad generados por los datos originales de Age. Podemos observar que la distribución que mejor se ajusta es la Gamma, con lo cual tomamos un ajuste para hombres y mujeres. El ajuste es un poco mejor para hombres.  
-
-```{r, echo=FALSE, warning=FALSE, include=FALSE}
-fit_gamma<-fitdist(datos$Age, "gamma")
-fit_gamma
-```
-
-
-```{r, echo=FALSE, warning=FALSE, include=FALSE}
-fit_Weibull<-fitdist(datos$Age, "weibull")
-fit_Weibull
-```
-
-```{r, echo=FALSE, warning=FALSE, include=FALSE}
-db1_1<-datos%>%filter(Gender=="Male")
-fit_Weibull_1<-fitdist(db1_1$Age, "gamma")
-fit_Weibull_1
-```
-
-
-
-```{r, echo=FALSE, warning=FALSE, include=FALSE}
-db1_1<-datos%>%filter(Gender=="Female")
-fit_Weibull_1<-fitdist(db1_1$Age, "gamma")
-fit_Weibull_1
-```
-
-
-```{r, echo=FALSE, fig.height=4, fig.width=8}
-set.seed(4070)
-
-distribuciones<-datos %>% ggplot(aes(x = Age, color = "datos")) + geom_density() + 
-  geom_density(aes(x, color = "gamma"), 
-               data = tibble(x = rgamma(500, shape = 19.8096721, rate = 0.5196064))) + 
-  geom_density(aes(x, color = "weibull"), 
-               data = tibble(x = rweibull(500, shape = 4.255909, scale = 41.658675))) + theme_bw() 
-
-set.seed(340)
-betas_male_female<-datos %>% ggplot(aes(x = Age, color = "Datos")) + geom_density() + 
-  geom_density(aes(x, color = "Gamma_Male"), 
-               data = tibble(x = rgamma(500, shape = 20.5980638, rate = 0.5474039))) + 
-  geom_density(aes(x, color = "Gamma_Female"), 
-               data = tibble(x = rgamma(500, shape = 19.0528213, rate = 0.4915475))) +
-  theme_bw() 
-
-grid.arrange(distribuciones, betas_male_female, nrow = 1)
-```
-
-
-
-
-
-
 
 
 
@@ -388,10 +340,23 @@ grid.arrange(distribuciones, betas_male_female, nrow = 1)
 Para esta sección haremos un análisis de superivencia que se basa en el estudio del tiempo en la ocurrencia de un evento, donde el tiempo de superviviencia o falla se define como el tiempo transcurrido desde el estado inicial hasta la ocurrencia de un evento dado (@villers). 
 
 
-Usaremos survfit() y Surv() para construir el objeto de supervivencia estándar, usando Kaplan Meier. Usamos la fórmula $survfit(Surv(Tenure, Exited)\sim 1)$ para producir las estimaciones de Kaplan-Meier de la probabilidad de supervivencia en el tiempo para cada una de las categorías de Gender. A continuación, mostramos las curvas de supervivencia obtenidas, las cuales podemos interpretar como la probabilidad de permanecer en el banco más allá de cierto tiempo, por cada uno de los dos grupos en que se clasificaron: hombre y mujer. La tasa de supervivencia o permanencia en el banco, es menor para las mujeres en comparación con los hombres. 
+Usaremos survfit() y Surv() para construir el objeto de supervivencia estándar, usando Kaplan Meier. Usamos la fórmula $survfit(Surv(Tenure, Exited)\sim 1)$ para producir las estimaciones de Kaplan-Meier de la probabilidad de supervivencia en el tiempo para cada una de las categorías de Gender. A continuación, mostramos la curva de supervivencia obtenida, la cual podemos interpretar como la probabilidad de permanecer en el banco más allá de cierto tiempo. La curva es decreciente, lo que implica que conforme pasan los años con la cuenta, la probabilidad de permanecer disminuye. 
+
+```{r, echo=FALSE, fig.height=2.4}
+ajusteSurv <- survfit(Surv(datos$Tenure, datos$Exited)~1)
+ajusteSurv$surv<-ajusteSurv$pstate[,1]
+
+tibble(Tenure = ajusteSurv$time, surv = ajusteSurv$surv) %>% 
+  ggplot(aes(x = Tenure, y = surv, fill = "total")) + geom_step(aes(color = "1"))+
+  scale_color_manual(labels = c("1" = "total"),
+                     values = c("1" = "goldenrod2")) + theme_bw()
+```
 
 
-```{r, echo=FALSE}
+En la siguiente gráfica, podemos observar que por cada uno de los dos grupos en que se clasificaron como hombre y mujer, la tasa de permanencia es menor para las mujeres comparado con los hombres. 
+
+
+```{r, echo=FALSE, fig.height=2.8}
 db1_1 <- datos %>% filter(Gender == "Male")
 db1_2 <- datos %>% filter(Gender == "Female")
 
@@ -407,7 +372,7 @@ tibble(Tenure = ajusteSurv_1$time, surv = ajusteSurv_1$surv) %>%
                      values = c("1" = "goldenrod2", "2" = "darkorchid3")) + theme_bw()
 ```
 
-A continuación podemos ver la función de riesgo asociada. 
+A continuación podemos ver la función de riesgo asociada, la cual es convexa y creciente. Esta función de densidad condicional, llamada también tasa de falla condicional, es la probabilidad de falla (dejar el banco) durante un intervalo de tiempo muy pequeño dado que el individuo ha permanecido hasta el inicio del intervalo. Observamos entonces que la probabilidad condicional de abandonar el banco, dado que hasta ahora no se ha sucedido, aumentará con la variable de tiempo. Esta probabilidad es mayor e incrementa más rápido para las mujeres que para los hombres. 
 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -419,7 +384,7 @@ mod_cb <- fitSmoothHazard(Exited ~ Tenure+ Gender,
                           time = "Tenure")
 ```
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide', fig.height=3.5}
 plot(mod_cb,
      hazard.params = list(xvar = "Tenure",
                           by = "Gender",
@@ -430,9 +395,9 @@ plot(mod_cb,
 
 
 
-Si queremos hacer este mismo análisis para la variable Geography, que integra a Francia, Alemania y España. A continuación se muestran las funciones de supervivencia. Se puede observar que la tasa de supervivencia o permanencia en el banco para los residentes de Alemania es menor que los residentes de Francia y España. Estos dos últimos muestran la misma tasa de supervivencia. 
+Se realizó el mismo análisis para la variable Geography, que integra a Francia, Alemania y España. A continuación se muestran las funciones de supervivencia. Se puede observar que la tasa de supervivencia o permanencia en el banco para los residentes de Alemania es menor que los residentes de Francia y España. Estos dos últimos muestran la misma tasa de supervivencia. 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.height=2.8}
 db1_1 <- datos %>% filter(Geography == "France")
 db1_2 <- datos %>% filter(Geography == "Germany")
 db1_3 <- datos %>% filter(Geography == "Spain")
@@ -452,7 +417,7 @@ tibble(Tenure = ajusteSurv_1$time, surv = ajusteSurv_1$surv) %>%
                      values = c("1" = "magenta", "2" = "darkorchid3", "3" = "green")) + theme_bw()
 ```
 
-A continuación podemos ver la función de riesgo asociada. 
+A continuación podemos ver la función de riesgo asociada, la probabilidad condicional de abandonar el banco, dado que hasta ahora no se ha sucedido, aumentará con la variable de tiempo. Esta probabilidad es mayor e incrementa más rápido para Alemania que para Francia o España. 
 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -477,7 +442,7 @@ plot(mod_cb,
 Para clientes con y sin tarjeta de crédito (HasCrCard). Se observa que la tasa de supervivencia no es tan diferente si se tiene tarjeta de crédito o no, aunque sí se observa una tasa de supervivencia ligeramente mayor si se tiene este producto.  
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.height=2.8}
 db1_1 <- datos %>% filter(HasCrCard == 1)
 db1_2 <- datos %>% filter(HasCrCard == 0)
 
@@ -493,7 +458,7 @@ tibble(Tenure = ajusteSurv_1$time, surv = ajusteSurv_1$surv) %>%
                      values = c("1" = "goldenrod2", "2" = "darkorchid3")) + theme_bw()
 ```
 
-A continuación podemos ver la función de riesgo asociada. 
+A continuación podemos ver la función de riesgo asociada, la probabilidad condicional de abandonar el banco, dado que hasta ahora no se ha sucedido, aumentará con la variable de tiempo y es mayor si no se tiene tarjeta de crédito. 
 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -519,7 +484,7 @@ plot(mod_cb,
 Para clientes que son miembros activos (IsActiveMember). Se observa que la tasa de supervivencia es mayor si se es un miembro activo. 
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.height=2.8}
 db1_1 <- datos %>% filter(IsActiveMember == 1)
 db1_2 <- datos %>% filter(IsActiveMember == 0)
 
@@ -535,7 +500,7 @@ tibble(Tenure = ajusteSurv_1$time, surv = ajusteSurv_1$surv) %>%
                      values = c("1" = "goldenrod2", "2" = "darkorchid3")) + theme_bw()
 ```
 
-A continuación podemos ver la función de riesgo asociada. 
+A continuación podemos ver la función de riesgo asociada, la probabilidad condicional de abandonar el banco, dado que hasta ahora no se ha sucedido, aumentará con la variable de tiempo y es mayor si no es miembro activo.   
 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -560,7 +525,7 @@ plot(mod_cb,
 Para clientes que son miembros con un producto o dos o más productos (NumOfProducts). La tasa de supervivencia es mayor si se cuenta con dos o más productos. 
 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.height=2.8}
 db1_1 <- datos %>% filter(NumOfProducts2 == 1)
 db1_2 <- datos %>% filter(NumOfProducts2 == 2)
 
@@ -576,7 +541,8 @@ tibble(Tenure = ajusteSurv_1$time, surv = ajusteSurv_1$surv) %>%
                      values = c("1" = "goldenrod2", "2" = "darkorchid3")) + theme_bw()
 ```
 
-A continuación podemos ver la función de riesgo asociada. 
+A continuación podemos ver la función de riesgo asociada, la probabilidad condicional de abandonar el banco, dado que hasta ahora no se ha sucedido, aumentará con la variable de tiempo y es mayor si solamente se tiene contratado un solo producto bancario. 
+
 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -606,7 +572,7 @@ plot(mod_cb,
 
  
 
-Ajustaremos un modelo lineal generalizado binomial con liga logit, es decir, una regresión logística con la variable dependiente binaria ``Exited`` y las covariables de la base de datos. Esto es, plantearemos un modelo para explicar la probabilidad de salirse o no salirse del banco en función de las variables independientes proporcionadas. Podemos observar que dadas las demás variables en el modelo, parece ser que ``GeographySpain`` es la única que ya no agrega más información al modelado, con país de referencia Francia. 
+Ajustaremos un modelo lineal generalizado binomial con liga logit, es decir, una regresión logística con la variable dependiente binaria ``Exited`` y las covariables del conjunto de datos. Esto es, plantearemos un modelo para explicar la probabilidad de salirse o no salirse del banco en función de las variables independientes proporcionadas. Podemos observar en el cuadro MODELO, que dadas las demás variables en el modelo, parece ser que ``GeographySpain`` es la única que ya no agrega más información al modelado, tomando en consideración que el país de referencia para la variable ``Geography`` es Francia. Los demás coeficientes estimados son estadísticamente significativos con un ninvel de confianza del 95% para las pruebas de hipótesis, por lo que si se sumplen los supuestos del modelo, podemos interpretar sus signos y valores más adelante y hacer inferencia sobre ellos. Por esto, primero revisaremos el cumplimiento de los supuestos del modelado, antes de empezar a inferir e interpretar.     
 
 
 
@@ -618,7 +584,7 @@ fitlogit=glm(Exited~.-Balance, family = binomial(link="logit"), data=datos)
 
 
 \begin{table}[!htbp] \centering 
-  \caption{} 
+  \caption{MODELO} 
   \label{} 
 \footnotesize
 \begin{tabular}{@{\extracolsep{5pt}}lc} 
@@ -662,7 +628,7 @@ Akaike Inf. Crit. & 124,343.100 \\
 
 
 
-A continuación hacemos una prueba similar a la prueba F asociada a la tabla ANOVA, pero como la variable dependiente es binaria, hacemos la prueba de hipótesis lineal general con la Chi-cuadrada. La hipótesis nula es la misma, que los estimadores $\hat{\beta_i}=0$, $\forall i=1,..,.p$, contra la alternativa de que al menos una $\hat{\beta_i}\neq0$. Obtuvimos que el p-value es menor a 0.05, rechazamos la hipótesis nula con un nivel de confianza del 95%. Entonces podemos continuar con la revisión de los supuestos del modelo planteado, para su posterior interpretación.  
+Hacemos una prueba de hipótesis similar a la prueba F asociada a la tabla ANOVA, como la variable dependiente es binaria ésta es la lineal general con la Chi-cuadrada. La hipótesis nula es la misma, que los estimadores $\hat{\beta_i}=0$, $\forall i=1,..,.p$, contra la alternativa de que al menos una $\hat{\beta_i}\neq0$. Obtuvimos que el p-value es menor a 0.05, por lo que rechazamos la hipótesis nula con un nivel de confianza del 95%. Entonces podemos continuar con la revisión de los supuestos del modelo planteado, para su posterior interpretación.  
 
 
 ```{r, echo=FALSE, include=FALSE}
@@ -688,7 +654,7 @@ summary(glht(fitlogit, linfct=K, rhs=m), test=Chisqtest() )
 ```
 
 
-A continuación haremos las puebas de los supuestos del modelo.   En la siguiente gráfica se muestran en general las pruebas KS test, Dispersion test y Outlier test, con p-values mayores a 0.05, por lo que no podemos rechazar los supuestos de normalidad, homocedasticidad y no presencia de outliers influyentes. La prueba de uniformidad ``Asymptotic one-sample Kolmogorov-Smirnov test`` tiene un p-value de $0.66629$ por lo que la distribución general se ajusta a las expectativas. Por otra parte, la prueba ``DHARMa nonparametric dispersion test via sd of residuals fitted vs. simulated`` tiene un p-value de 0.288, por lo que la dispersión simulada es igual a la dispersión observada. Por último, con la prueba ``DHARMa outlier test based on exact binomial test with approximate expectations`` se tiene un p-value de 0.05092, por lo que no podemos afirmar que haya más valores atípicos de simulación de los esperados.
+En la siguiente gráfica se muestran en general las pruebas KS test, Dispersion test y Outlier test, con p-values mayores a 0.05, por lo que no podemos rechazar los supuestos de normalidad, homocedasticidad y no presencia de outliers influyentes. Con la prueba de uniformidad ``Asymptotic one-sample Kolmogorov-Smirnov test`` se obtuvo un p-value de $0.66629$ por lo que la distribución general se ajusta a las expectativas. Por otra parte, la prueba ``DHARMa nonparametric dispersion test via sd of residuals fitted vs. simulated`` tiene un p-value de 0.288, por lo que la dispersión simulada es igual a la dispersión observada. Por último, con la prueba ``DHARMa outlier test based on exact binomial test with approximate expectations`` se tiene un p-value de 0.05092, por lo que no podemos afirmar que haya más valores atípicos de simulación de los esperados.
 
 
 
@@ -711,7 +677,7 @@ plotQQunif(fitlogitres) # left plot in plot.DHARMa()
 ```
 
 
-En la siguiente pueba, podemos observar la prueba de si hay más valores atípicos de simulación de los esperados considerando el método de bootstrap. En este caso, no se detectó un problema con los outliers.  
+En las siguientes gráficas, podemos observar la prueba de si hay más valores atípicos de simulación que los esperados considerando el método de bootstrap. En este caso, no se detectó un problema con los outliers.  
 
 ```{r, echo=FALSE, results='hide'}
 set.seed(123)
@@ -720,7 +686,7 @@ testOutliers(fitlogitres_, alternative = c("two.sided"), margin = c("both"), typ
 ```
 
 
-Podemos observar que no tenemos un problema de ceros inflados, el p-value es mayor que $0.05$ con un nivel de confianza del 95%, esto es, los ceros esperados son muy similares a los simulados. Por lo tanto, no es necesario ajustar un modelo de ceros inflados.  
+Podemos observar que no tenemos un problema de balanceo, el p-value asociado al **zero-inflation test** es mayor que $0.05$ con un nivel de confianza del 95%, esto es, los ceros esperados son muy similares a los simulados. Por lo tanto, no es necesario ajustar un modelo de balanceo.   
 
 ```{r, echo=FALSE, results='hide'}
 testZeroInflation(fitlogit)
@@ -766,15 +732,15 @@ shapirop<-shapiro$p.value
 ```
 
 
-Además, en la prueba de normalidad ``Lilliefors (Kolmogorov-Smirnov) normality test`` tenemos que el p-value es de `r lilKS[2]`, por lo que no se rechaza la hipótesis nula de normalidad. La prueba  ``Shapiro-Wilk`` refuerza este resultado con un p-value de `r shapirop`.  
+Además, en la prueba de normalidad ``Lilliefors (Kolmogorov-Smirnov) normality test`` tenemos que el p-value es de `r lilKS[2]`, por lo que no se puede rechazar la hipótesis nula de normalidad. La prueba  ``Shapiro-Wilk`` refuerza este resultado con un p-value de `r shapirop`.  
 
-Como el modelo cumple todos los supuestos, podemos hacer estimación e inferencia, es decir, podemos interpretar los coeficientes estimados $\hat{\beta_i}$. Recordemos que la única variable que ya no agrega más información al modelado, dado que están en el modelo las otras variables, es ``GeographySpain``. Esto se puede observar en los intervalos de confianza, pues en este caso incluye al cero, en los demás casos no.  Como podemos observar, los signos indican que, un mayor score crediticio disminuye la probabilidad de dejar el banco, ser residente aleman (comparado a ser francés) aumenta la probabilidad de salirse del banco, ser hombre disminuye la probabilidad de  dejar el banco (en comparación a ser mujer), la edad aumenta la probabilidad de dejar el banco, los años de tenencia de la cuenta disminuye la probabilidad de dejar el banco, tener tarjeta de crédito disminuye la probabilidad de dejar el banco, ser un miembro muy activo disminuye la probabilidad de dejar el banco, el salario aumenta la probabilidad de dejar el banco, y tener dos o más productos disminuye la probabilidad de irse del banco.   
+Como el modelo cumple todos los supuestos, podemos hacer estimación e inferencia, es decir, podemos interpretar los coeficientes estimados $\hat{\beta_i}$. Recordemos que la única variable que ya no agrega más información al modelado, dado que están en el modelo las otras variables, es ``GeographySpain``. Esto se puede observar en los intervalos de confianza, pues en este caso incluye al cero, en los demás casos no.  Como podemos observar, los signos indican que los factores que disminuyen la probabilidad de dejar el banco son el score crediticio , ser hombre (en comparación a ser mujer), los años de tenencia de la cuenta,   tener tarjeta de crédito, ser un miembro muy activo, y tener dos o más productos. Por otro lado, los factores que aumentan la probabilidad de dejar el banco son el ser residente aleman (comparado a ser francés), la edad, y el salario.   
 
 ```{r, echo=FALSE, message=FALSE}
 kable(fitlogit$coefficients, caption="Estimación puntual")
 ```
 
-Adicionalmente se muestran los intervalos de confianza de los estimadores de los parámetros del modelo. 
+Adicionalmente, se muestran los intervalos de confianza de los estimadores de los parámetros del modelo. 
 
 ```{r, echo=FALSE, message=FALSE}
 kable(confint(fitlogit), caption="Intervalos de confianza")
@@ -787,9 +753,9 @@ Para una interpretación más directa, en términos de las probabilidades de irs
 
 Salvo ``GeographySpain``, podemos interpretar los intervalos de confianza de los coeficientes estimados. 
 
-Si un cliente tiene un score crediticio minimo de 350, es francés, es mujer, con 18 años de edad, con cero años de tenencia de la cuenta, sin tarjeta de crédito, no es una cliente activa, con salario estimado mínimo de 11.58 y con un único producto en el banco, su probabilidad de dejar el banco se calcula como: 
+Si un cliente tiene un score crediticio minimo de 350, es francés, es mujer, con 18 años de edad, con cero años de tenencia de la cuenta, sin tarjeta de crédito, no es una cliente activa, con salario estimado mínimo de 11.58 y con un único producto en el banco, su probabilidad de dejar el banco se calcula como (Ver @hosmer, pág. 7, para la transformación; y Chunk Perfil1, linea 758 para el cálculo):  
 
-```{r, echo=FALSE}
+```{r Perfil1, echo=FALSE}
 perfil_bajo<-exp(fitlogit$coefficients[1]+fitlogit$coefficients[2]*350+fitlogit$coefficients[6]*18  + fitlogit$coefficients[10]*11.58)/(1+exp(fitlogit$coefficients[1]+fitlogit$coefficients[2]*350+fitlogit$coefficients[6]*18  + fitlogit$coefficients[10]*11.58))
 ```
 
@@ -815,9 +781,9 @@ En general, podemos clasificar varios perfiles de clientes y obtener la probabil
 # Conclusiones
 
 
-Las curvas de supervivencia muestran que la probabilidad de permanecer en el banco más allá de cierto tiempo de tenencia de la cuenta disminuye, la tasa de supervivencia o permanencia en el banco es menor para las mujeres en comparación con los hombres, y la tasa de supervivencia o permanencia en el banco para los residentes de Alemania es menor que los residentes de Francia y España. Además, la tasa de supervivencia es mayor si se es un miembro activo que si no es es un cliente activo y esta tasa es mayor para clientes con dos o más productos comparado con lcientes que solamente tienen un único producto en el banco. 
+Las curvas de supervivencia muestran que la probabilidad de permanecer en el banco más allá de cierto tiempo de permanencia con la cuenta disminuye, la tasa de supervivencia o permanencia en el banco es menor para las mujeres en comparación con los hombres, al  igual que con los residentes de Alemania en comparación con los de Francia y España. Además, la tasa de supervivencia es mayor si se es un miembro activo que si no es es un cliente activo, así como para clientes con dos o más productos comparado con clientes que solamente tienen un único producto en el banco.  
 
-Con el modelo logit, pudimos observar que un mayor score crediticio disminuye la probabilidad de dejar el banco, ser residente aleman (comparado a ser francés) aumenta la probabilidad de salirse del banco, ser hombre disminuye la probabilidad de  dejar el banco (en comparación a ser mujer), la edad aumenta la probabilidad de dejar el banco, los años de tenencia de la cuenta disminuye la probabilidad de dejar el banco, tener tarjeta de crédito disminuye la probabilidad de dejar el banco, ser un miembro muy activo disminuye la probabilidad de dejar el banco, el salario aumenta la probabilidad de dejar el banco, y tener dos o más productos disminuye la probabilidad de irse del banco.   
+Con el modelo logit, pudimos observar que los factores que disminuyen la probabilidad de dejar el banco son el score crediticio , ser hombre (en comparación a ser mujer), los años de tenencia de la cuenta,   tener tarjeta de crédito, ser un miembro muy activo, y tener dos o más productos. Por otro lado, los factores que aumentan la probabilidad de dejar el banco son el ser residente aleman (comparado a ser francés), la edad, y el salario.   
 
 
 

@@ -4,8 +4,8 @@ for (i in 1:nvar) {
   name=names(df)[i]
   x <- df[,i] 
   hist(x, freq = FALSE,
-       main="Histograma y Boxplot", ylab="Frecuencia Relativa", xlab=name, 
-       border="white", cex=0.4, cex.main=1, col="azure3",
+       main="", ylab="Frecuencia Relativa", xlab=name, 
+       border="white", cex=0.3, cex.main=1, col="azure3",
        bty = "n");grid()
   
   #mu <- mean(x); s <- sd(x)
@@ -21,7 +21,7 @@ for (i in 1:nvar) {
   # Boxplot
   par(new = TRUE)
   boxplot(x, horizontal = TRUE, axes = F, border = "black",
-          lwd = 2, col = rgb(0, 1, 1, alpha = 0.15), cex=0.4, pars=list(outcol="red"))
+          lwd = 2, col = rgb(0, 1, 1, alpha = 0.15), cex=0.3, pars=list(outcol="red"))
 }}
 
 # Normalizacion Min-Max
