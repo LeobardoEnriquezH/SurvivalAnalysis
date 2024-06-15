@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.12) (preloaded format=pdflatex 2023.1.15)  2 JUN 2024 01:13
+This is pdfTeX, Version 3.141592653-2.6-1.40.24 (MiKTeX 22.12) (preloaded format=pdflatex 2023.1.15)  14 JUN 2024 23:39
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -809,32 +809,32 @@ Package microtype Info: Character `029' is missing
 (microtype)             in font `T1/lmr/m/sc/12'.
 (microtype)             Ignoring protrusion settings for this character.
 LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 1
-74.
+73.
 (C:\Users\Leobardo\AppData\Local\Programs\MiKTeX\tex/latex/lm\ot1lmr.fd
 File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OML+lmm on input line 1
-74.
+73.
 (C:\Users\Leobardo\AppData\Local\Programs\MiKTeX\tex/latex/lm\omllmm.fd
 File: omllmm.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMS+lmsy on input line 
-174.
+173.
 (C:\Users\Leobardo\AppData\Local\Programs\MiKTeX\tex/latex/lm\omslmsy.fd
 File: omslmsy.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    Trying to load font information for OMX+lmex on input line 
-174.
+173.
 (C:\Users\Leobardo\AppData\Local\Programs\MiKTeX\tex/latex/lm\omxlmex.fd
 File: omxlmex.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <10> on input line 174.
+(Font)              <10> on input line 173.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <7> on input line 174.
+(Font)              <7> on input line 173.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <5> on input line 174.
-LaTeX Font Info:    Trying to load font information for U+msa on input line 174
+(Font)              <5> on input line 173.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 173
 .
 (C:\Users\Leobardo\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
@@ -842,7 +842,7 @@ File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 (C:\Users\Leobardo\AppData\Local\Programs\MiKTeX\tex/latex/microtype\mt-msa.cfg
 File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
 )
-LaTeX Font Info:    Trying to load font information for U+msb on input line 174
+LaTeX Font Info:    Trying to load font information for U+msb on input line 173
 .
 (C:\Users\Leobardo\AppData\Local\Programs\MiKTeX\tex/latex/amsfonts\umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -861,7 +861,7 @@ LaTeX Info: Redefining \% on input line 1.
 
 [1]
 LaTeX Font Info:    Trying to load font information for T1+lmtt on input line 3
-14.
+13.
 (C:\Users\Leobardo\AppData\Local\Programs\MiKTeX\tex/latex/lm\t1lmtt.fd
 File: t1lmtt.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
 )
@@ -871,7 +871,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-11-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-11-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-11-1.pd
-f  used on input line 328.
+f  used on input line 327.
 (pdftex.def)             Requested size: 469.75385pt x 234.8769pt.
 <ProyectoFinal_files/figure-latex/unnamed-chunk-11-2.pdf, id=33, 578.16pt x 289
 .08pt>
@@ -879,10 +879,10 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-11-2.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-11-2.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-11-2.pd
-f  used on input line 329.
+f  used on input line 328.
 (pdftex.def)             Requested size: 469.75385pt x 234.8769pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 328--330
+Underfull \hbox (badness 10000) in paragraph at lines 327--329
 [][]
  []
 
@@ -893,7 +893,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-12-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-12-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-12-1.pd
-f  used on input line 342.
+f  used on input line 341.
 (pdftex.def)             Requested size: 433.63878pt x 144.54623pt.
 <ProyectoFinal_files/figure-latex/unnamed-chunk-13-1.pdf, id=51, 433.62pt x 144
 .54pt>
@@ -901,7 +901,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-13-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-13-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-13-1.pd
-f  used on input line 344.
+f  used on input line 343.
 (pdftex.def)             Requested size: 433.63878pt x 144.54623pt.
 <ProyectoFinal_files/figure-latex/unnamed-chunk-14-1.pdf, id=52, 433.62pt x 144
 .54pt>
@@ -909,7 +909,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-14-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-14-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-14-1.pd
-f  used on input line 346.
+f  used on input line 345.
 (pdftex.def)             Requested size: 433.63878pt x 144.54623pt.
 [3 <./ProyectoFinal_files/figure-latex/unnamed-chunk-11-2.pdf> <./ProyectoFinal
 _files/figure-latex/unnamed-chunk-12-1.pdf> <./ProyectoFinal_files/figure-latex
@@ -920,7 +920,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-18-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-18-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-18-1.pd
-f  used on input line 358.
+f  used on input line 357.
 (pdftex.def)             Requested size: 433.63878pt x 289.09251pt.
 <ProyectoFinal_files/figure-latex/unnamed-chunk-19-1.pdf, id=76, 505.89pt x 310
 .15875pt>
@@ -928,7 +928,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-19-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-19-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-19-1.pd
-f  used on input line 368.
+f  used on input line 367.
 (pdftex.def)             Requested size: 469.76265pt x 288.00925pt.
 [4 <./ProyectoFinal_files/figure-latex/unnamed-chunk-14-1.pdf> <./ProyectoFinal
 _files/figure-latex/unnamed-chunk-18-1.pdf>]
@@ -938,7 +938,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-20-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-20-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-20-1.pd
-f  used on input line 388.
+f  used on input line 387.
 (pdftex.def)             Requested size: 433.62555pt x 172.64719pt.
 [5 <./ProyectoFinal_files/figure-latex/unnamed-chunk-19-1.pdf> <./ProyectoFinal
 _files/figure-latex/unnamed-chunk-20-1.pdf>]
@@ -948,7 +948,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-21-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-21-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-21-1.pd
-f  used on input line 394.
+f  used on input line 393.
 (pdftex.def)             Requested size: 433.62555pt x 201.75632pt.
 <ProyectoFinal_files/figure-latex/unnamed-chunk-23-1.pdf, id=110, 433.62pt x 25
 2.945pt>
@@ -956,7 +956,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-23-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-23-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-23-1.pd
-f  used on input line 405.
+f  used on input line 404.
 (pdftex.def)             Requested size: 433.62555pt x 252.94823pt.
 <ProyectoFinal_files/figure-latex/unnamed-chunk-24-1.pdf, id=111, 433.62pt x 20
 1.75375pt>
@@ -964,7 +964,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-24-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-24-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-24-1.pd
-f  used on input line 414.
+f  used on input line 413.
 (pdftex.def)             Requested size: 433.62555pt x 201.75632pt.
 [6 <./ProyectoFinal_files/figure-latex/unnamed-chunk-21-1.pdf> <./ProyectoFinal
 _files/figure-latex/unnamed-chunk-23-1.pdf>]
@@ -974,7 +974,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-26-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-26-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-26-1.pd
-f  used on input line 422.
+f  used on input line 421.
 (pdftex.def)             Requested size: 433.62555pt x 252.94823pt.
 <ProyectoFinal_files/figure-latex/unnamed-chunk-27-1.pdf, id=131, 433.62pt x 20
 1.75375pt>
@@ -982,7 +982,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-27-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-27-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-27-1.pd
-f  used on input line 429.
+f  used on input line 428.
 (pdftex.def)             Requested size: 433.62555pt x 201.75632pt.
 [7 <./ProyectoFinal_files/figure-latex/unnamed-chunk-24-1.pdf> <./ProyectoFinal
 _files/figure-latex/unnamed-chunk-26-1.pdf>]
@@ -992,7 +992,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-29-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-29-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-29-1.pd
-f  used on input line 436.
+f  used on input line 435.
 (pdftex.def)             Requested size: 433.62555pt x 252.94823pt.
 <ProyectoFinal_files/figure-latex/unnamed-chunk-30-1.pdf, id=150, 433.62pt x 20
 1.75375pt>
@@ -1000,7 +1000,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-30-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-30-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-30-1.pd
-f  used on input line 441.
+f  used on input line 440.
 (pdftex.def)             Requested size: 433.62555pt x 201.75632pt.
 [8 <./ProyectoFinal_files/figure-latex/unnamed-chunk-27-1.pdf> <./ProyectoFinal
 _files/figure-latex/unnamed-chunk-29-1.pdf>]
@@ -1010,7 +1010,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-32-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-32-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-32-1.pd
-f  used on input line 448.
+f  used on input line 447.
 (pdftex.def)             Requested size: 433.62555pt x 252.94823pt.
 <ProyectoFinal_files/figure-latex/unnamed-chunk-33-1.pdf, id=169, 433.62pt x 20
 1.75375pt>
@@ -1018,7 +1018,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-33-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-33-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-33-1.pd
-f  used on input line 454.
+f  used on input line 453.
 (pdftex.def)             Requested size: 433.62555pt x 201.75632pt.
 [9 <./ProyectoFinal_files/figure-latex/unnamed-chunk-30-1.pdf> <./ProyectoFinal
 _files/figure-latex/unnamed-chunk-32-1.pdf>]
@@ -1028,21 +1028,21 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-35-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-35-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-35-1.pd
-f  used on input line 461.
+f  used on input line 460.
 (pdftex.def)             Requested size: 433.62555pt x 252.94823pt.
 [10 <./ProyectoFinal_files/figure-latex/unnamed-chunk-33-1.pdf> <./ProyectoFina
 l_files/figure-latex/unnamed-chunk-35-1.pdf>]
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <8> on input line 486.
+(Font)              <8> on input line 485.
 LaTeX Font Info:    External font `lmex10' loaded for size
-(Font)              <6> on input line 486.
+(Font)              <6> on input line 485.
 <ProyectoFinal_files/figure-latex/unnamed-chunk-39-1.pdf, id=205, 433.62pt x 25
 2.945pt>
 File: ProyectoFinal_files/figure-latex/unnamed-chunk-39-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-39-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-39-1.pd
-f  used on input line 548.
+f  used on input line 547.
 (pdftex.def)             Requested size: 433.62555pt x 252.94823pt.
 [11]
 <ProyectoFinal_files/figure-latex/unnamed-chunk-40-1.pdf, id=217, 433.62pt x 25
@@ -1051,7 +1051,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-40-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-40-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-40-1.pd
-f  used on input line 554.
+f  used on input line 553.
 (pdftex.def)             Requested size: 433.62555pt x 252.94823pt.
 <ProyectoFinal_files/figure-latex/unnamed-chunk-41-1.pdf, id=218, 433.62pt x 25
 2.945pt>
@@ -1059,7 +1059,7 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-41-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-41-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-41-1.pd
-f  used on input line 562.
+f  used on input line 561.
 (pdftex.def)             Requested size: 433.62555pt x 252.94823pt.
 [12 <./ProyectoFinal_files/figure-latex/unnamed-chunk-39-1.pdf> <./ProyectoFina
 l_files/figure-latex/unnamed-chunk-40-1.pdf>]
@@ -1069,11 +1069,11 @@ File: ProyectoFinal_files/figure-latex/unnamed-chunk-44-1.pdf Graphic file (typ
 e pdf)
 <use ProyectoFinal_files/figure-latex/unnamed-chunk-44-1.pdf>
 Package pdftex.def Info: ProyectoFinal_files/figure-latex/unnamed-chunk-44-1.pd
-f  used on input line 577.
+f  used on input line 576.
 (pdftex.def)             Requested size: 433.62555pt x 252.94823pt.
 [13 <./ProyectoFinal_files/figure-latex/unnamed-chunk-41-1.pdf> <./ProyectoFina
 l_files/figure-latex/unnamed-chunk-44-1.pdf>] [14]
-Underfull \hbox (badness 4036) in paragraph at lines 686--688
+Underfull \hbox (badness 4036) in paragraph at lines 685--687
 []$[] \OT1/lmr/m/n/10 (+20) = [] =$
  []
 
@@ -1118,7 +1118,7 @@ rams/MiKTeX/fonts/type1/public/lm/lmsy6.pfb><C:/Users/Leobardo/AppData/Local/Pr
 ograms/MiKTeX/fonts/type1/public/lm/lmsy7.pfb><C:/Users/Leobardo/AppData/Local/
 Programs/MiKTeX/fonts/type1/public/lm/lmsy8.pfb><C:/Users/Leobardo/AppData/Loca
 l/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb>
-Output written on ProyectoFinal.pdf (17 pages, 10430979 bytes).
+Output written on ProyectoFinal.pdf (17 pages, 10429718 bytes).
 PDF statistics:
  395 PDF objects out of 1000 (max. 8388607)
  33 named destinations out of 1000 (max. 500000)
