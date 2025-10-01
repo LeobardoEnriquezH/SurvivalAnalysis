@@ -1,0 +1,127 @@
+---
+title: "Untitled"
+author: "Leobardo Enriquez"
+date: "2025-09-28"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Modelo 1
+
+```{r}
+library(survival)
+library(survminer)
+library(prodlim)
+library(pec)
+```
+
+
+```{r}
+data("lung")
+head(lung)
+```
+
+
+```{r}
+fit<-survfit(Surv(time, status) ~ sex, data=lung)
+```
+
+
+```{r}
+print(fit)
+```
+
+
+```{r}
+summary(fit)
+```
+
+
+```{r}
+summary(fit)$table
+```
+
+
+
+```{r}
+d<-data.frame(time=fit$time,
+              n.risk=fit$n.risk,
+              n.event=fit$n.event,
+              n.censor=fit$n.censor,
+              surv=fit$surv,
+              upper=fit$upper,
+              lower=fit$lower)
+head(d)
+```
+
+
+```{r}
+#prob calc
+time0<-300
+time1<-time0+365
+1-predictSurvProb(fit, newdata=data.frame(sex=1), time=time1)
+```
+
+
+
+
+
+
+```{r}
+ggsurvplot(fit,
+           pval=TRUE, conf.int = TRUE,
+           risk.table = TRUE,
+           risk.table.col="strata",
+           linetype = "strata",
+           surv.median.line = "hv",
+           ggtheme = theme_bw(),
+           palette = c("#E7B800", "#2E9FDF"))
+```
+
+
+## Modelo 2
+
+
+```{r}
+res.cox<-coxph(Surv(time, status) ~ sex, data=lung)
+res.cox
+```
+
+
+```{r}
+summary(res.cox)
+```
+
+
+```{r}
+res.cox<-coxph(Surv(time, status) ~ age+sex+ph.ecog, data=lung)
+res.cox
+```
+
+
+```{r}
+summary(res.cox)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
